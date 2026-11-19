@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solmar Streets — open-world crime game</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0e1420; font-family: Verdana, Geneva, sans-serif; }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #hud { position: fixed; inset: 0; pointer-events: none; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); z-index: 5; }
+  #hud .panel { position: absolute; background: rgba(8,12,22,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 6px 10px; }
+  #money { top: 12px; right: 12px; font-size: 20px; font-weight: bold; color: #7dff9a; }
+  #stars { top: 12px; left: 50%; transform: translateX(-50%); font-size: 26px; letter-spacing: 4px; color: #ffd23e; }
+  #stars .off { color: rgba(255,255,255,.25); }
+  #health { top: 56px; right: 12px; width: 180px; }
+  #health .bar { height: 12px; background: rgba(255,255,255,.2); border-radius: 6px; overflow: hidden; margin-top: 4px; }
+  #health .fill { height: 100%; width: 100%; background: linear-gradient(90deg,#ff5a4e,#ffb84e); }
+  #objective { top: 12px; left: 12px; max-width: 340px; font-size: 14px; line-height: 1.4; }
+  #objective b { color: #ffd23e; }
+  #speed { bottom: 12px; right: 12px; font-size: 15px; }
+  #hint { bottom: 12px; left: 12px; font-size: 13px; opacity: .85; }
+  #toast { bottom: 64px; left: 50%; transform: translateX(-50%); font-size: 18px; font-weight: bold; color: #ffe27a; white-space: nowrap; }
+  #minimap { position: absolute; right: 12px; bottom: 56px; border: 2px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(8,12,22,.6); }
+  #clock { top: 100px; right: 12px; font-size: 13px; opacity: .9; }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; background: radial-gradient(ellipse at center, rgba(20,40,80,.88), rgba(5,8,16,.96)); z-index: 10; }
+  .screen h1 { font-size: 56px; margin: 0 0 4px; letter-spacing: 3px; color: #ffd23e; text-shadow: 0 3px 0 #b3541e, 0 6px 18px rgba(0,0,0,.7); }
+  .screen h2 { font-size: 20px; margin: 0 0 18px; color: #9fd8ff; font-weight: normal; }
+  .screen p { max-width: 560px; font-size: 15px; line-height: 1.6; color: #e8eef7; margin: 6px 0; }
+  .screen .keys { font-size: 13px; color: #b9c6da; }
+  .screen button { pointer-events: auto; margin-top: 18px; font-size: 20px; padding: 12px 34px; border: none; border-radius: 10px; background: #ffb62e; color: #231303; font-weight: bold; cursor: pointer; }
+  .screen button:hover { background: #ffd23e; }
+  .hidden { display: none !important; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Solmar Streets: explore the city of Solmar on foot and by car"></canvas>
+<div id="hud">
+  <div class="panel" id="objective"><b id="missionTitle">SOLMAR STREETS</b><br><span id="missionText">Press Enter to start</span></div>
+  <div class="panel" id="stars"><span id="starRow"></span></div>
+  <div class="panel" id="money">$0</div>
+  <div class="panel" id="health">Health<div class="bar"><div class="fill" id="healthFill"></div></div></div>
+  <div class="panel" id="clock">09:00</div>
+  <div class="panel" id="speed">0 km/h</div>
+  <div class="panel" id="hint">WASD move &amp; drive &middot; E steal / enter car &middot; Click shoot &middot; F punch &middot; P pause</div>
+  <div class="panel" id="toast"></div>
+  <canvas id="minimap" width="150" height="150"></canvas>
+</div>
+<div class="screen" id="titleScreen">
+  <h1>SOLMAR STREETS</h1>
+  <h2>A sun-soaked open-world crime story in the city of Solmar</h2>
+  <p>You are <b>Milo Reyes</b>, new in town, broke and fast. Carmen Delgado runs the
+  courier crew that owns these streets — run her jobs, dodge the Solmar PD,
+  and earn your way from the marina to the big score.</p>
+  <p class="keys">WASD / arrows — walk &amp; drive &nbsp;|&nbsp; E — steal or enter a car &nbsp;|&nbsp; Mouse click — shoot &nbsp;|&nbsp; F — punch &nbsp;|&nbsp; P — pause &nbsp;|&nbsp; M — mute</p>
+  <p class="keys">Steal a car and the cops come. Lose them in the alleys — or outrun them on the coast road.</p>
+  <button id="startBtn">START ENGINE</button>
+  <p class="keys" id="continueNote"></p>
+</div>
+<div class="screen hidden" id="pauseScreen">
+  <h1>PAUSED</h1>
+  <p>Solmar waits for no one. Well — right now it does.</p>
+  <button id="resumeBtn">KEEP DRIVING</button>
+</div>
+<div class="screen hidden" id="overScreen">
+  <h1>BUSTED / DOWN</h1>
+  <h2 id="overReason">The Solmar PD caught up with you.</h2>
+  <p id="overStats"></p>
+  <button id="restartBtn">START OVER IN SOLMAR</button>
+</div>
+<p id="status" role="status" aria-live="polite"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
